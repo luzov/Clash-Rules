@@ -1,6 +1,7 @@
 payload:
   - DOMAIN-SUFFIX,steampowered.com
   - DOMAIN-SUFFIX,steamcommunity.com
+  - DOMAIN-SUFFIX,steamstatic.com
   - DOMAIN,store.steampowered.com
   - DOMAIN,help.steampowered.com
   - DOMAIN,steamcommunity-a.akamaihd.net
