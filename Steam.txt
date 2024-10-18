@@ -4,13 +4,13 @@ payload:
   - DOMAIN-SUFFIX,valvesoftware.com
   - DOMAIN-SUFFIX,steamstatic.com
   - DOMAIN-SUFFIX,steamcontent.com
-  - DOMAIN-SUFFIX,akamaihd.net
-  - DOMAIN-SUFFIX,cloudinary.com
-  - DOMAIN-SUFFIX,steamdb.info
   - DOMAIN,store.steampowered.com
   - DOMAIN,help.steampowered.com
-  - DOMAIN,steamcommunity-a.akamaihd.net
+  - DOMAIN,steamcommunity-a.akamaihd.net 
   - DOMAIN,media.steampowered.com
+  - DOMAIN,steamcdn-a.akamaihd.net
+  - DOMAIN,cloud-images.steamusercontent.com
+  - DOMAIN,steamdb.info
   - IP-CIDR,103.28.54.0/23,no-resolve
   - IP-CIDR,103.28.55.0/24,no-resolve
   - IP-CIDR,103.28.56.0/22,no-resolve
