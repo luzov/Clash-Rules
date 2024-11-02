@@ -82,8 +82,7 @@ function getIconForGroup(groupName) {
 function overwriteRules(params) {
   const customRules = [
     "DOMAIN-SUFFIX,linux.do,Linux Do",
-    "DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat",
-    `IP-CIDR,104.21.16.30/32,Shared Chat`
+    "DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat"
   ];
   const rules = [
     ...customRules,
