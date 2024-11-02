@@ -83,6 +83,7 @@ function overwriteRules(params) {
   const customRules = [
     "DOMAIN-SUFFIX,linux.do,Linux Do",
     "DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat",
+    `IP-CIDR,104.21.16.30/32,Shared Chat`
   ];
   const rules = [
     ...customRules,
@@ -423,7 +424,7 @@ function overwriteProxyGroups(params) {
 
 function overwriteDns(params) {
   const cnDnsList = ["https://223.5.5.5/dns-query", "https://1.12.12.12/dns-query"];
-  const trustDnsList = ["quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
+  const trustDnsList = ["quic://dns.cooluc.com"];
   const dnsOptions = {
     enable: true,
     "prefer-h3": true,
