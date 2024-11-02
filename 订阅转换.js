@@ -352,6 +352,7 @@ function overwriteProxyGroups(params) {
       interval: 300,
       tolerance: 50,
       proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+      hidden: true,
     },
 
     {
