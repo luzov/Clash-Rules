@@ -10,8 +10,9 @@ function main(params) {
 
 const countryRegions = [
   { code: "HK", name: "香港", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg", regex: /(香港|HK|Hong Kong|🇭🇰)/i },
-  { code: "TW", name: "台湾", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg", regex: /(台湾|TW|Taiwan|🇹🇼)/i },
+  { code: "TW", name: "台湾", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg", regex: /(台湾|TW|Taiwan|🇹🇼)/i },  
   { code: "SG", name: "新加坡", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/sg.svg", regex: /(新加坡|狮城|SG|Singapore|🇸🇬)/i },
+  { code: "AR", name: "阿根廷", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ar.svg", regex: /(阿根廷|AR|Argentina|🇦🇷)/i },
   { code: "JP", name: "日本", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg", regex: /(日本|JP|Japan|🇯🇵)/i },
   { code: "US", name: "美国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg", regex: /(美国|US|USA|United States|America|🇺🇸)/i },
   { code: "DE", name: "德国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/de.svg", regex: /(德国|DE|Germany|🇩🇪)/i },
@@ -19,6 +20,16 @@ const countryRegions = [
   { code: "UK", name: "英国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/gb.svg", regex: /(英国|UK|United Kingdom|Britain|Great Britain|🇬🇧)/i },
   { code: "CA", name: "加拿大", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ca.svg", regex: /(加拿大|CA|Canada|🇨🇦)/i },
   { code: "AU", name: "澳大利亚", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/au.svg", regex: /(澳大利亚|AU|Australia|🇦🇺)/i },
+  { code: "ES", name: "西班牙", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/es.svg", regex: /\b(西班牙|ES|Spain|🇪🇸)\b/i },
+  { code: "NL", name: "荷兰", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/nl.svg", regex: /\b(荷兰|NL|Netherlands|🇳🇱)\b/i },
+  { code: "TR", name: "土耳其", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tr.svg", regex: /(土耳其|TR|Turkey|🇹🇷)/i },
+  { code: "RU", name: "俄罗斯", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ru.svg", regex: /(俄罗斯|RU|Russia|🇷🇺)/i },
+  { code: "IN", name: "印度", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/in.svg", regex: /\b(印度|IN|India|🇮🇳)\b/i }, 
+  { code: "BR", name: "巴西", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/br.svg", regex: /(巴西|BR|Brazil|🇧🇷)/i },
+  { code: "IT", name: "意大利", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/it.svg", regex: /(意大利|IT|Italy|🇮🇹)/i },
+  { code: "CH", name: "瑞士", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ch.svg", regex: /(瑞士|CH|Switzerland|🇨🇭)/i },
+  { code: "SE", name: "瑞典", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/se.svg", regex: /(瑞典|SE|Sweden|🇸🇪)/i },
+  { code: "NO", name: "挪威", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/no.svg", regex: /(挪威|NO|Norway|🇳🇴)/i },
   { code: "CN", name: "中国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/cn.svg", regex: /(中国|CN|China|PRC|🇨🇳)/i },
 ];
 
@@ -36,6 +47,8 @@ function getTestUrlForGroup(groupName) {
       return "https://claude.ai/";
     case "Spotify":
       return "https://www.spotify.com/";
+    case "Linux Do":
+      return "https://linux.do";
     default:
       return "http://www.gstatic.com/generate_204";
   }
@@ -234,10 +247,30 @@ function overwriteRules(params) {
 function overwriteProxyGroups(params) {
   const allProxies = params["proxies"].map((e) => e.name);
 
-  const autoProxyGroupRegexs = countryRegions.map(region => ({
-    name: `${region.code} - 自动选择`, 
-    regex: region.regex,
-  }));
+  const availableCountryCodes = new Set();
+  const otherProxies = [];
+  for (const proxy of params["proxies"]) {
+    let found = false;
+    for (const region of countryRegions) {
+      if (region.regex.test(proxy.name)) {
+        availableCountryCodes.add(region.code);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      otherProxies.push(proxy.name);
+    }
+  }
+
+  availableCountryCodes.add("CN");
+
+  const autoProxyGroupRegexs = countryRegions
+    .filter(region => availableCountryCodes.has(region.code))
+    .map(region => ({
+      name: `${region.code} - 自动选择`, 
+      regex: region.regex,
+    }));
 
   const autoProxyGroups = autoProxyGroupRegexs
     .map((item) => ({
@@ -251,13 +284,15 @@ function overwriteProxyGroups(params) {
     }))
     .filter((item) => item.proxies.length > 0);
 
-  const manualProxyGroupsConfig = countryRegions.map(region => ({
-    name: `${region.code} - 手动选择`,
-    type: "select", 
-    proxies: getManualProxiesByRegex(params, region.regex),
-    icon: region.icon, 
-    hidden: false, 
-  })).filter(item => item.proxies.length > 0); 
+  const manualProxyGroupsConfig = countryRegions
+    .filter(region => availableCountryCodes.has(region.code))
+    .map(region => ({
+      name: `${region.code} - 手动选择`,
+      type: "select", 
+      proxies: getManualProxiesByRegex(params, region.regex),
+      icon: region.icon, 
+      hidden: false, 
+    })).filter(item => item.proxies.length > 0); 
 
   const groups = [
     {
@@ -279,7 +314,9 @@ function overwriteProxyGroups(params) {
       name: "自动选择", 
       type: "select", 
       icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg",
-      proxies: ["ALL - 自动选择", ...autoProxyGroups.map(group => group.name)],
+      proxies: ["ALL - 自动选择", ...autoProxyGroups
+        .filter(group => !["Shared Chat", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Linux Do"].includes(group.name))
+        .map(group => group.name)],
     },
 
     {
@@ -292,6 +329,7 @@ function overwriteProxyGroups(params) {
       strategy: "consistent-hashing", 
       lazy: true, 
       proxies: allProxies, 
+      hidden: true,
     },
 
     {
@@ -304,6 +342,7 @@ function overwriteProxyGroups(params) {
       strategy: "round-robin", 
       lazy: true, 
       proxies: allProxies, 
+      hidden: true,
     },
 
     {
@@ -318,38 +357,38 @@ function overwriteProxyGroups(params) {
 
     {
       name: "Shared Chat",
-      type: "url-test",
+      type: "select", 
       url: getTestUrlForGroup("Shared Chat"),
-      interval: 300,
-      tolerance: 50,
+      icon: getIconForGroup("Shared Chat"),
       proxies: [
         "DIRECT",
         proxyName,
-        ...countryRegions.flatMap(region => [
-          `${region.code} - 自动选择`,
-          `${region.code} - 手动选择`,
-        ]),
+        ...countryRegions
+          .filter(region => availableCountryCodes.has(region.code))
+          .flatMap(region => [
+            `${region.code} - 自动选择`,
+            `${region.code} - 手动选择`,
+          ]),
         "其它 - 自动选择",
       ],
-      icon: getIconForGroup("Shared Chat"),
     },
 
-    ...["Linux Do", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify"].map(groupName => ({
+    ...["Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Linux Do"].map(groupName => ({ 
       name: groupName,
-      type: "url-test",
+      type: "select", 
       url: getTestUrlForGroup(groupName),
-      interval: 300,
-      tolerance: 50,
+      icon: getIconForGroup(groupName),
       proxies: [
         proxyName,
-        ...countryRegions.flatMap(region => [
-          `${region.code} - 自动选择`,
-          `${region.code} - 手动选择`,
-        ]),
+        ...countryRegions
+          .filter(region => availableCountryCodes.has(region.code))
+          .flatMap(region => [
+            `${region.code} - 自动选择`,
+            `${region.code} - 手动选择`,
+          ]),
         "其它 - 自动选择",
         "DIRECT",
       ],
-      icon: getIconForGroup(groupName),
     })),
     
     {
@@ -373,7 +412,7 @@ function overwriteProxyGroups(params) {
     url: "http://www.gstatic.com/generate_204",
     interval: 300,
     tolerance: 50,
-    proxies: getProxiesByRegex(params, /(?!.*(?: 剩余 | 到期 | 主页 | 官网 | 游戏 | 关注))(.*)/),
+    proxies: otherProxies.length > 0 ? otherProxies : ["手动选择"],
     hidden: true,
   });
   
@@ -426,5 +465,9 @@ function getProxiesByRegex(params, regex) {
 
 function getManualProxiesByRegex(params, regex) {
   const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
-  return regex.test("CN") ? ["DIRECT", ...matchedProxies, "手动选择", proxyName] : matchedProxies.length > 0 ? matchedProxies : ["DIRECT", "手动选择", proxyName];
+  return regex.test("CN") 
+    ? ["DIRECT", ...matchedProxies, "手动选择", proxyName]
+    : matchedProxies.length > 0 
+      ? matchedProxies 
+      : ["DIRECT", "手动选择", proxyName];
 }
