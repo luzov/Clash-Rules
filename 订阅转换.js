@@ -307,7 +307,7 @@ function overwriteProxyGroups(params) {
       name: "手动选择", 
       type: "select", 
       icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg",
-      proxies: allProxies, 
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
     },
 
     {
@@ -328,7 +328,7 @@ function overwriteProxyGroups(params) {
       "max-failed-times": 3, 
       strategy: "consistent-hashing", 
       lazy: true, 
-      proxies: allProxies, 
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
       hidden: true,
     },
 
@@ -341,18 +341,17 @@ function overwriteProxyGroups(params) {
       "max-failed-times": 3, 
       strategy: "round-robin", 
       lazy: true, 
-      proxies: allProxies, 
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
       hidden: true,
     },
 
     {
-      name: "ALL - 自动选择", 
-      type: "url-test", 
+      name: "ALL - 自动选择",
+      type: "url-test",
       url: "http://www.gstatic.com/generate_204",
-      interval: 300, 
-      tolerance: 50, 
-      proxies: allProxies, 
-      hidden: true, 
+      interval: 300,
+      tolerance: 50,
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
     },
 
     {
