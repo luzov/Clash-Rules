@@ -90,16 +90,17 @@ function overwriteRules(params) {
 	const customRules = [
 		"DOMAIN-SUFFIX,linux.do,Linux Do",
 		"DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat"
-		];
+	];
 	const rules = [
 		...customRules,
+		"GEOIP,CN,DIRECT,no-resolve",
+		"GEOIP,LAN,DIRECT,no-resolve",
+		"GEOSITE,geolocation-cn,DIRECT,no-resolve",
 		"RULE-SET,steam,Steam",
+		"RULE-SET,direct,DIRECT",
+		"RULE-SET,cncidr,DIRECT",
 		"RULE-SET,private,DIRECT",
 		"RULE-SET,lancidr,DIRECT",
-		"GEOIP,LAN,DIRECT,no-resolve",
-		"RULE-SET,cncidr,DIRECT",
-		"GEOIP,CN,DIRECT,no-resolve",
-		"RULE-SET,direct,DIRECT",
 		"RULE-SET,applications,DIRECT",
 		"RULE-SET,openai,ChatGPT",
 		"RULE-SET,claude,Claude",
@@ -114,7 +115,7 @@ function overwriteRules(params) {
 		"RULE-SET,proxy," + proxyName,
 		"RULE-SET,tld-not-cn," + proxyName,
 		"MATCH,漏网之鱼",
-		];
+	];
 	const ruleProviders = {
 		steam: {
 			type: "http",
@@ -308,6 +309,29 @@ function overwriteProxyGroups(params) {
 		hidden: false, 
 	})).filter(item => item.proxies.length > 0); 
 	
+	let otherManualProxyGroup = null;
+	let otherAutoProxyGroup = null;
+	
+	if (otherProxies.length > 0) {
+		otherManualProxyGroup = {
+			name: "其它 - 手动选择",
+			type: "select",
+			proxies: otherProxies,
+			icon: "https://www.clashverge.dev/assets/icons/guard.svg", 
+			hidden: false,
+		};
+		
+		otherAutoProxyGroup = {
+			name: "其它 - 自动选择",
+			type: "url-test",
+			url: "http://www.gstatic.com/generate_204",
+			interval: 300,
+			tolerance: 50,
+			proxies: otherProxies,
+			hidden: true,
+		};
+	}
+	
 	const groups = [
 		{
 			name: proxyName, 
@@ -330,7 +354,7 @@ function overwriteProxyGroups(params) {
 			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg",
 			proxies: ["ALL - 自动选择", ...autoProxyGroups
 				.filter(group => !["Shared Chat", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Linux Do"].includes(group.name))
-				.map(group => group.name)],
+				.map(group => group.name), otherAutoProxyGroup ? otherAutoProxyGroup.name : null].filter(Boolean),
 		},
 		
 		{
@@ -382,9 +406,9 @@ function overwriteProxyGroups(params) {
 				.flatMap(region => [
 					`${region.code} - 自动选择`,
 					`${region.code} - 手动选择`,
-					]),
-				"其它 - 自动选择",
-				],
+				]),
+				otherAutoProxyGroup ? otherAutoProxyGroup.name : null,
+			].filter(Boolean),
 		},
 		
 		...["Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Linux Do"].map(groupName => ({ 
@@ -394,21 +418,21 @@ function overwriteProxyGroups(params) {
 			icon: getIconForGroup(groupName),
 			proxies: [
 				proxyName,
+				"DIRECT",
 				...countryRegions
 				.filter(region => availableCountryCodes.has(region.code))
 				.flatMap(region => [
 					`${region.code} - 自动选择`,
 					`${region.code} - 手动选择`,
-					]),
-				"其它 - 自动选择",
-				"DIRECT",
-				],
+				]),
+				otherAutoProxyGroup ? otherAutoProxyGroup.name : null,
+			].filter(Boolean),
 		})),
 		
 		{
 			name: "漏网之鱼", 
 			type: "select", 
-			proxies: ["DIRECT", proxyName], 
+			proxies: [proxyName, "DIRECT"], 
 			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg",
 		},
 		
@@ -418,20 +442,17 @@ function overwriteProxyGroups(params) {
 			proxies: ["REJECT", "DIRECT", proxyName], 
 			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/block.svg",
 		},
-		];
+	];
 	
-	autoProxyGroups.push({
-		name: "其它 - 自动选择",
-		type: "url-test",
-		url: "http://www.gstatic.com/generate_204",
-		interval: 300,
-		tolerance: 50,
-		proxies: otherProxies.length > 0 ? otherProxies : ["手动选择"],
-		hidden: true,
-	});
+	if (otherAutoProxyGroup) {
+		autoProxyGroups.push(otherAutoProxyGroup);
+	}
 	
 	groups.push(...autoProxyGroups);
 	groups.push(...manualProxyGroupsConfig);
+	if (otherManualProxyGroup) {
+		groups.push(otherManualProxyGroup); 
+	}
 	params["proxy-groups"] = groups; 
 }
 
@@ -480,7 +501,7 @@ function getProxiesByRegex(params, regex) {
 function getManualProxiesByRegex(params, regex) {
 	const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
 	return regex.test("CN") 
-	? ["DIRECT", ...matchedProxies, "手动选择", proxyName]
+	? ["DIRECT", ...matchedProxies]
 	: matchedProxies.length > 0 
 	? matchedProxies 
 	: ["DIRECT", "手动选择", proxyName];
