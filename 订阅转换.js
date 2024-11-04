@@ -10,12 +10,12 @@ function main(params) {
 
 const countryRegions = [
 	{ code: "HK", name: "香港", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg", regex: /(香港|HK|Hong Kong|🇭🇰)(?!.*(中国|CN|China|PRC|🇨🇳))/i },
-	{ code: "TW", name: "台湾", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg", regex: /(台湾|\bTW\b|Taiwan|🇹🇼)(?!.*(中国|CN|China|PRC|🇨🇳))(?!.*Networks)/i },  
+	{ code: "TW", name: "台湾", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg", regex: /(台湾|TW|Taiwan|🇹🇼)(?!.*(中国|CN|China|PRC|🇨🇳))(?!.*Networks)/i },  
 	{ code: "SG", name: "新加坡", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/sg.svg", regex: /(新加坡|狮城|SG|Singapore|🇸🇬)/i },
-	{ code: "JP", name: "日本", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg", regex: /(日本|JP|Japan|🇯🇵)/i },
-	{ code: "US", name: "美国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg", regex: /^(?!.*(Plus|plus|custom)).*(美国|US|USA|United States|America|🇺🇸)/i },
+	{ code: "JP", name: "日本", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg", regex: /(日本|JP|Japan|东京|🇯🇵)/i },
+	{ code: "US", name: "美国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg", regex: /^(?!.*(Plus|plus|custom)).*(美国|洛杉矶|US|USA|United States|America|🇺🇸)/i },
 	{ code: "DE", name: "德国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/de.svg", regex: /^(?!.*shadowsocks).*(德国|DE|Germany|🇩🇪)/i },
-	{ code: "KR", name: "韩国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/kr.svg", regex: /(韩国|KR|Korea|South Korea|🇰🇷)/i },
+	{ code: "KR", name: "韩国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/kr.svg", regex: /(韩国|首尔|KR|Korea|South Korea|🇰🇷)/i },
 	{ code: "UK", name: "英国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/gb.svg", regex: /(英国|UK|United Kingdom|Britain|Great Britain|🇬🇧)/i },
 	{ code: "CA", name: "加拿大", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ca.svg", regex: /^(?!.*(Anycast|Datacamp)).*(加拿大|CA|Canada|🇨🇦)/i },
 	{ code: "AU", name: "澳大利亚", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/au.svg", regex: /(澳大利亚|AU|Australia|🇦🇺)/i },
@@ -38,6 +38,11 @@ const countryRegions = [
 	{ code: "NG", name: "尼日利亚", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ng.svg", regex: /^(?!.*(ong|ing|angeles|ang|ung)).*(尼日利亚|NG|Nigeria|🇳🇬)(?!.*(Hongkong|Singapore))/i },
 	{ code: "TR", name: "土耳其", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tr.svg", regex: /^(?!.*(trojan|str|central)).*(土耳其|TR|Turkey|🇹🇷)/i },
 	{ code: "ES", name: "西班牙", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/es.svg", regex: /^(?!.*(vless|angeles|vmess|seychelles|business|ies|reston)).*(西班牙|ES|Spain|🇪🇸)/i },
+	{ code: "AT", name: "奥地利", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/at.svg", regex: /(奥地利|AT|Austria|🇦🇹)/i },
+	{ code: "MX", name: "墨西哥", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/mx.svg", regex: /(墨西哥|MX|Mexico|🇲🇽)/i },
+	{ code: "EE", name: "爱沙尼亚", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ee.svg", regex: /(爱沙尼亚|EE|Estonia|🇪🇪)/i },
+	{ code: "PL", name: "波兰", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/pl.svg", regex: /(波兰|PL|Poland|🇵🇱)/i },
+	{ code: "IR", name: "伊朗", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ir.svg", regex: /(伊朗|IR|Iran|🇮🇷)/i }, 
 ];
 
 function getTestUrlForGroup(groupName) {
@@ -76,7 +81,7 @@ function getIconForGroup(groupName) {
 	case "Claude":
 		return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
 	case "Spotify":
-		return "https://storage.googleapis.com/spotifynewsroom-jp.appspot.com/1/2020/12/Spotify_Icon_CMYK_Green.png";
+		return "https://www.vectorlogo.zone/logos/spotify/spotify-icon.svg";
 	case "漏网之鱼":
 		return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg";
 	case "广告拦截":
@@ -86,31 +91,37 @@ function getIconForGroup(groupName) {
 	}
 }
 
+const customRules = [
+	"DOMAIN-SUFFIX,linux.do,Linux Do",
+	"DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat"
+];
+
 function overwriteRules(params) {
-	const customRules = [
-		"DOMAIN-SUFFIX,linux.do,Linux Do",
-		"DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat"
-	];
 	const rules = [
 		...customRules,
+		"RULE-SET,steam,Steam",
+		"RULE-SET,telegramcidr,Telegram,no-resolve",
+		"RULE-SET,openai,ChatGPT",
+		"RULE-SET,claude,Claude",
+		"RULE-SET,spotify,Spotify",
 		"GEOIP,CN,DIRECT,no-resolve",
 		"GEOIP,LAN,DIRECT,no-resolve",
-		"GEOSITE,geolocation-cn,DIRECT,no-resolve",
-		"RULE-SET,steam,Steam",
+		"GEOSITE,geolocation-cn,DIRECT",
 		"RULE-SET,direct,DIRECT",
 		"RULE-SET,cncidr,DIRECT",
 		"RULE-SET,private,DIRECT",
 		"RULE-SET,lancidr,DIRECT",
 		"RULE-SET,applications,DIRECT",
-		"RULE-SET,openai,ChatGPT",
-		"RULE-SET,claude,Claude",
-		"RULE-SET,spotify,Spotify",
-		"RULE-SET,telegramcidr,Telegram,no-resolve",
+		"RULE-SET,google," + proxyName,
 		"RULE-SET,apple," + proxyName,
 		"RULE-SET,icloud," + proxyName,
-		"RULE-SET,google," + proxyName,
 		"RULE-SET,greatfire," + proxyName,
 		"RULE-SET,reject,广告拦截",
+		"RULE-SET,AD,广告拦截",
+		"RULE-SET,EasyList,广告拦截",
+		"RULE-SET,EasyListChina,广告拦截",
+		"RULE-SET,EasyPrivacy,广告拦截",
+		"RULE-SET,ProgramAD,广告拦截",
 		"RULE-SET,gfw," + proxyName,
 		"RULE-SET,proxy," + proxyName,
 		"RULE-SET,tld-not-cn," + proxyName,
@@ -164,24 +175,28 @@ function overwriteRules(params) {
 			behavior: "classical",
 			url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml",
 			path: "./ruleset/custom/openai.yaml",
+			interval: 86400,
 		},
 		claude: {
 			type: "http",
 			behavior: "classical",
 			url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml",
 			path: "./ruleset/custom/Claude.yaml",
+			interval: 86400,
 		},
 		spotify: {
 			type: "http",
 			behavior: "classical",
 			url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Spotify/Spotify.yaml",
 			path: "./ruleset/custom/Spotify.yaml",
+			interval: 86400,
 		},
 		telegramcidr: {
 			type: "http",
 			behavior: "ipcidr",
 			url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt",
 			path: "./ruleset/custom/telegramcidr.yaml",
+			interval: 86400,
 		},
 		direct: {
 			type: "http",
@@ -218,13 +233,6 @@ function overwriteRules(params) {
 			path: "./ruleset/tld-not-cn.yaml",
 			interval: 86400,
 		},
-		telegramcidr: {
-			type: "http",
-			behavior: "ipcidr",
-			url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt",
-			path: "./ruleset/telegramcidr.yaml",
-			interval: 86400,
-		},
 		cncidr: {
 			type: "http",
 			behavior: "ipcidr",
@@ -245,6 +253,55 @@ function overwriteRules(params) {
 			url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt",
 			path: "./ruleset/applications.yaml",
 			interval: 86400,
+		},
+		AD: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/AD.yaml",
+		  path: "./rules/AD.yaml",
+		  interval: 86400,
+		},
+		EasyList: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/EasyList.yaml",
+		  path: "./rules/EasyList.yaml",
+		  interval: 86400,
+		},
+		EasyListChina: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/EasyListChina.yaml",
+		  path: "./rules/EasyListChina.yaml",
+		  interval: 86400,
+		},
+		EasyPrivacy: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/EasyPrivacy.yaml",
+		  path: "./rules/EasyPrivacy.yaml",
+		  interval: 86400,
+		},
+		ProgramAD: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/ProgramAD.yaml",
+		  path: "./rules/ProgramAD.yaml",
+		  interval: 86400,
+		},
+		gfw: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt",
+		  path: "./ruleset/gfw.yaml",
+		  interval: 86400,
+		},
+		greatfire: {
+		  type: "http",
+		  behavior: "domain",
+		  url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/greatfire.txt",
+		  path: "./ruleset/greatfire.yaml",
+		  interval: 86400,
 		},
 	};
 	
@@ -401,6 +458,7 @@ function overwriteProxyGroups(params) {
 			proxies: [
 				"DIRECT",
 				proxyName,
+				"ALL - 自动选择",
 				...countryRegions
 				.filter(region => availableCountryCodes.has(region.code))
 				.flatMap(region => [
@@ -419,6 +477,7 @@ function overwriteProxyGroups(params) {
 			proxies: [
 				proxyName,
 				"DIRECT",
+				"ALL - 自动选择",
 				...countryRegions
 				.filter(region => availableCountryCodes.has(region.code))
 				.flatMap(region => [
@@ -465,9 +524,11 @@ function overwriteDns(params) {
 		"default-nameserver": cnDnsList,
 		nameserver: trustDnsList,
 		"nameserver-policy": {
-			"geosite:cn": cnDnsList,
-			"geosite:geolocation-!cn": trustDnsList,
-			"domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
+		  "geosite:cn": cnDnsList,
+		  "geoip:cn": cnDnsList,
+		  "DOMAIN-SUFFIX,shared.oaifree.com": cnDnsList,
+		  "geosite:geolocation-!cn": trustDnsList,
+		  "domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
 		},
 		fallback: trustDnsList,
 		"fallback-filter": { geoip: true, "geoip-code": "CN", ipcidr: ["240.0.0.0/4"] },
