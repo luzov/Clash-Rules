@@ -102,7 +102,7 @@ function getIconForGroup(groupName) {
 const customRules = [
 	"DOMAIN-SUFFIX,linux.do,Linux Do",
 	"DOMAIN-SUFFIX,shared.oaifree.com,Shared Chat",
-    "IP-CIDR,183.230.113.152/32,REJECT",
+  "IP-CIDR,183.230.113.152/32,REJECT",
 	"IP-CIDR,1.12.12.12/32,代理模式"
 ];
 
@@ -146,11 +146,11 @@ function overwriteRules(params) {
 			path: "./ruleset/steam.yaml",
 			interval: 86400,
 		},
-		Microsoft : {
+		Microsoft: {
 			type: "http",
 			behavior: "classical",
-			url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/Microsoft.list",
-			path: "./ruleset/steam.yaml",
+			url: "https://raw.githubusercontent.com/yangtb2024/Steam-Clash/refs/heads/main/microsoft.txt",
+			path: "./ruleset/Microsoft.yaml",
 			interval: 86400,
 		},
 		reject: {
