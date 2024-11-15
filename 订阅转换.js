@@ -483,7 +483,7 @@ function overwriteProxyGroups(params) {
             `${region.code} - 自动选择 - Shared Chat`,
             `${region.code} - 手动选择`,
           ]),
-        otherAutoProxyGroup ? `${otherAutoProxyGroup.name}(Shared Chat)` : null,
+        otherAutoProxyGroup ? `${otherAutoProxyGroup.name} - Shared Chat` : null,
       ].filter(Boolean),
     },
 
@@ -502,7 +502,7 @@ function overwriteProxyGroups(params) {
             `${region.code} - 自动选择 - ${groupName}`, 
             `${region.code} - 手动选择`,
           ]),
-        otherAutoProxyGroup ? `${otherAutoProxyGroup.name}(${groupName})` : null,
+        otherAutoProxyGroup ? `${otherAutoProxyGroup.name} - ${groupName}` : null,
       ].filter(Boolean),
     })),
 
