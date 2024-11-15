@@ -328,211 +328,245 @@ function overwriteRules(params) {
 }
 
 function overwriteProxyGroups(params) {
-	const allProxies = params["proxies"].map((e) => e.name);
-	
-	const availableCountryCodes = new Set();
-	const otherProxies = [];
-	for (const proxy of params["proxies"]) {
-		let bestMatch = null;
-		let longestMatchLength = 0;
-		
-		for (const region of countryRegions) {
-			const match = proxy.name.match(region.regex);
-			if (match) {
-				if (match[0].length > longestMatchLength) {
-					longestMatchLength = match[0].length;
-					bestMatch = region.code;
-				}
-			}
-		}
-		
-		if (bestMatch) {
-			availableCountryCodes.add(bestMatch);
-		} else {
-			otherProxies.push(proxy.name);
-		}
-	}
-	
-	availableCountryCodes.add("CN");
-	
-	const autoProxyGroupRegexs = countryRegions
-	.filter(region => availableCountryCodes.has(region.code))
-	.map(region => ({
-		name: `${region.code} - 自动选择`, 
-		regex: region.regex,
-	}));
-	
-	const autoProxyGroups = autoProxyGroupRegexs
-	.map((item) => ({
-		name: item.name,
-		type: "url-test",
-		url: "http://www.gstatic.com/generate_204",
-		interval: 300,
-		tolerance: 50,
-		proxies: getProxiesByRegex(params, item.regex),
-		hidden: true,
-	}))
-	.filter((item) => item.proxies.length > 0);
-	
-	const manualProxyGroupsConfig = countryRegions
-	.filter(region => availableCountryCodes.has(region.code))
-	.map(region => ({
-		name: `${region.code} - 手动选择`,
-		type: "select", 
-		proxies: getManualProxiesByRegex(params, region.regex),
-		icon: region.icon, 
-		hidden: false, 
-	})).filter(item => item.proxies.length > 0); 
-	
-	let otherManualProxyGroup = null;
-	let otherAutoProxyGroup = null;
-	
-	if (otherProxies.length > 0) {
-		otherManualProxyGroup = {
-			name: "其它 - 手动选择",
-			type: "select",
-			proxies: otherProxies,
-			icon: "https://www.clashverge.dev/assets/icons/guard.svg", 
-			hidden: false,
-		};
-		
-		otherAutoProxyGroup = {
-			name: "其它 - 自动选择",
-			type: "url-test",
-			url: "http://www.gstatic.com/generate_204",
-			interval: 300,
-			tolerance: 50,
-			proxies: otherProxies,
-			hidden: true,
-		};
-	}
-	
-	const groups = [
-		{
-			name: proxyName, 
-			type: "select", 
-			url: "http://www.gstatic.com/generate_204",
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg",
-			proxies: ["自动选择", "手动选择", "负载均衡 (散列)", "负载均衡 (轮询)", "DIRECT"],
-		},
-		
-		{
-			name: "手动选择", 
-			type: "select", 
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg",
-			proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
-		},
-		
-		{
-			name: "自动选择", 
-			type: "select", 
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg",
-			proxies: ["ALL - 自动选择", ...autoProxyGroups
-				.filter(group => !["Shared Chat", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Google", "Microsoft", "Linux Do"].includes(group.name))
-				.map(group => group.name), otherAutoProxyGroup ? otherAutoProxyGroup.name : null].filter(Boolean),
-		},
-		
-		{
-			name: "负载均衡 (散列)", 
-			type: "load-balance", 
-			url: "http://www.gstatic.com/generate_204",
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg",
-			interval: 300, 
-			"max-failed-times": 3, 
-			strategy: "consistent-hashing", 
-			lazy: true, 
-			proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
-			hidden: true,
-		},
-		
-		{
-			name: "负载均衡 (轮询)", 
-			type: "load-balance", 
-			url: "http://www.gstatic.com/generate_204",
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/merry_go.svg",
-			interval: 300, 
-			"max-failed-times": 3, 
-			strategy: "round-robin", 
-			lazy: true, 
-			proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
-			hidden: true,
-		},
-		
-		{
-			name: "ALL - 自动选择",
-			type: "url-test",
-			url: "http://www.gstatic.com/generate_204",
-			interval: 300,
-			tolerance: 50,
-			proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
-			hidden: true,
-		},
-		
-		{
-			name: "Shared Chat",
-			type: "select", 
-			url: getTestUrlForGroup("Shared Chat"),
-			icon: getIconForGroup("Shared Chat"),
-			proxies: [
-				"DIRECT",
-				proxyName,
-				"ALL - 自动选择",
-				...countryRegions
-				.filter(region => availableCountryCodes.has(region.code))
-				.flatMap(region => [
-					`${region.code} - 自动选择`,
-					`${region.code} - 手动选择`,
-				]),
-				otherAutoProxyGroup ? otherAutoProxyGroup.name : null,
-			].filter(Boolean),
-		},
-		
-		...["Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Google", "Microsoft", "Linux Do"].map(groupName => ({ 
-			name: groupName,
-			type: "select", 
-			url: getTestUrlForGroup(groupName),
-			icon: getIconForGroup(groupName),
-			proxies: [
-				proxyName,
-				"DIRECT",
-				"ALL - 自动选择",
-				...countryRegions
-				.filter(region => availableCountryCodes.has(region.code))
-				.flatMap(region => [
-					`${region.code} - 自动选择`,
-					`${region.code} - 手动选择`,
-				]),
-				otherAutoProxyGroup ? otherAutoProxyGroup.name : null,
-			].filter(Boolean),
-		})),
-		
-		{
-			name: "漏网之鱼", 
-			type: "select", 
-			proxies: [proxyName, "DIRECT"], 
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg",
-			hidden: true,
-		},
-		
-		{
-			name: "广告拦截", 
-			type: "select", 
-			proxies: ["REJECT", "DIRECT", proxyName], 
-			icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/block.svg",
-			hidden: true,
-		},
-	];
-	
-	if (otherAutoProxyGroup) {
-		autoProxyGroups.push(otherAutoProxyGroup);
-	}
-	
-	groups.push(...autoProxyGroups);
-	groups.push(...manualProxyGroupsConfig);
-	if (otherManualProxyGroup) {
-		groups.push(otherManualProxyGroup); 
-	}
-	params["proxy-groups"] = groups; 
+  const allProxies = params["proxies"].map((e) => e.name);
+
+  const availableCountryCodes = new Set();
+  const otherProxies = [];
+  for (const proxy of params["proxies"]) {
+    let bestMatch = null;
+    let longestMatchLength = 0;
+
+    for (const region of countryRegions) {
+      const match = proxy.name.match(region.regex);
+      if (match) {
+        if (match[0].length > longestMatchLength) {
+          longestMatchLength = match[0].length;
+          bestMatch = region.code;
+        }
+      }
+    }
+
+    if (bestMatch) {
+      availableCountryCodes.add(bestMatch);
+    } else {
+      otherProxies.push(proxy.name);
+    }
+  }
+
+  availableCountryCodes.add("CN");
+
+  const autoProxyGroupRegexs = countryRegions
+    .filter(region => availableCountryCodes.has(region.code))
+    .map(region => ({
+      name: `${region.code} - 自动选择`,
+      regex: region.regex,
+    }));
+
+  const autoProxyGroups = autoProxyGroupRegexs
+    .map((item) => ({
+      name: item.name,
+      type: "url-test",
+      url: "http://www.gstatic.com/generate_204",
+      interval: 300,
+      tolerance: 50,
+      proxies: getProxiesByRegex(params, item.regex),
+      hidden: true,
+    }))
+    .filter((item) => item.proxies.length > 0);
+
+  const manualProxyGroupsConfig = countryRegions
+    .filter(region => availableCountryCodes.has(region.code))
+    .map(region => ({
+      name: `${region.code} - 手动选择`,
+      type: "select",
+      proxies: getManualProxiesByRegex(params, region.regex),
+      icon: region.icon,
+      hidden: false,
+    })).filter(item => item.proxies.length > 0);
+
+  let otherManualProxyGroup = null;
+  let otherAutoProxyGroup = null;
+
+  if (otherProxies.length > 0) {
+    otherManualProxyGroup = {
+      name: "其它 - 手动选择",
+      type: "select",
+      proxies: otherProxies,
+      icon: "https://www.clashverge.dev/assets/icons/guard.svg",
+      hidden: false,
+    };
+
+    otherAutoProxyGroup = {
+      name: "其它 - 自动选择",
+      type: "url-test",
+      url: "http://www.gstatic.com/generate_204",
+      interval: 300,
+      tolerance: 50,
+      proxies: otherProxies,
+      hidden: true,
+    };
+  }
+
+  const groups = [
+    {
+      name: proxyName,
+      type: "select",
+      url: "http://www.gstatic.com/generate_204",
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg",
+      proxies: ["自动选择", "手动选择", "负载均衡 (散列)", "负载均衡 (轮询)", "DIRECT"],
+    },
+
+    {
+      name: "手动选择",
+      type: "select",
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg",
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+    },
+
+    {
+      name: "自动选择",
+      type: "select",
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg",
+      proxies: ["ALL - 自动选择", ...autoProxyGroups
+        .filter(group => !["Shared Chat", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Google", "Microsoft", "Linux Do"].includes(group.name))
+        .map(group => group.name), otherAutoProxyGroup ? otherAutoProxyGroup.name : null].filter(Boolean),
+    },
+
+    {
+      name: "负载均衡 (散列)",
+      type: "load-balance",
+      url: "http://www.gstatic.com/generate_204",
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg",
+      interval: 300,
+      "max-failed-times": 3,
+      strategy: "consistent-hashing",
+      lazy: true,
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+      hidden: true,
+    },
+
+    {
+      name: "负载均衡 (轮询)",
+      type: "load-balance",
+      url: "http://www.gstatic.com/generate_204",
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/merry_go.svg",
+      interval: 300,
+      "max-failed-times": 3,
+      strategy: "round-robin",
+      lazy: true,
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+      hidden: true,
+    },
+
+    {
+      name: "ALL - 自动选择",
+      type: "url-test",
+      url: "http://www.gstatic.com/generate_204",
+      interval: 300,
+      tolerance: 50,
+      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+      hidden: true,
+    },
+
+    {
+      name: "Shared Chat",
+      type: "select",
+      url: getTestUrlForGroup("Shared Chat"),
+      icon: getIconForGroup("Shared Chat"),
+      proxies: [
+        "DIRECT",
+        proxyName,
+        "ALL - 自动选择 - Shared Chat", 
+        ...countryRegions
+          .filter(region => availableCountryCodes.has(region.code))
+          .flatMap(region => [
+            `${region.code} - 自动选择 - Shared Chat`,
+            `${region.code} - 手动选择`,
+          ]),
+        otherAutoProxyGroup ? `${otherAutoProxyGroup.name}(Shared Chat)` : null,
+      ].filter(Boolean),
+    },
+
+    ...["Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Google", "Microsoft", "Linux Do"].map(groupName => ({
+      name: groupName,
+      type: "select",
+      url: getTestUrlForGroup(groupName),
+      icon: getIconForGroup(groupName),
+      proxies: [
+        proxyName,
+        "DIRECT",
+        `ALL - 自动选择 - ${groupName}`, 
+        ...countryRegions
+          .filter(region => availableCountryCodes.has(region.code))
+          .flatMap(region => [
+            `${region.code} - 自动选择 - ${groupName}`, 
+            `${region.code} - 手动选择`,
+          ]),
+        otherAutoProxyGroup ? `${otherAutoProxyGroup.name}(${groupName})` : null,
+      ].filter(Boolean),
+    })),
+
+    {
+      name: "漏网之鱼",
+      type: "select",
+      proxies: [proxyName, "DIRECT"],
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg",
+      hidden: true,
+    },
+
+    {
+      name: "广告拦截",
+      type: "select",
+      proxies: ["REJECT", "DIRECT", proxyName],
+      icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/block.svg",
+      hidden: true,
+    },
+  ];
+
+  const websiteSpecificAutoGroups = ["Shared Chat", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Google", "Microsoft", "Linux Do"].flatMap(groupName => {
+    return [
+      {
+        name: `ALL - 自动选择 - ${groupName}`,
+        type: "url-test",
+        url: getTestUrlForGroup(groupName), 
+        interval: 300,
+        tolerance: 50,
+        proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+        hidden: true,
+      },
+      ...autoProxyGroupRegexs.map(item => ({
+        name: `${item.name} - ${groupName}`,
+        type: "url-test",
+        url: getTestUrlForGroup(groupName),
+        interval: 300,
+        tolerance: 50,
+        proxies: getProxiesByRegex(params, item.regex),
+        hidden: true,
+      })).filter(item => item.proxies.length > 0),
+      ...(otherAutoProxyGroup ? [{
+        name: `${otherAutoProxyGroup.name} - ${groupName}`,
+        type: "url-test",
+        url: getTestUrlForGroup(groupName), 
+        interval: 300,
+        tolerance: 50,
+        proxies: otherProxies,
+        hidden: true,
+      }] : []),
+    ];
+  });
+
+
+  if (otherAutoProxyGroup) {
+    autoProxyGroups.push(otherAutoProxyGroup);
+  }
+
+  groups.push(...autoProxyGroups);
+  groups.push(...manualProxyGroupsConfig);
+  if (otherManualProxyGroup) {
+    groups.push(otherManualProxyGroup);
+  }
+  groups.push(...websiteSpecificAutoGroups); 
+  params["proxy-groups"] = groups;
 }
 
 function overwriteDns(params, proxyName) {
