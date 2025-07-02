@@ -2,61 +2,13 @@ const proxyName = "代理模式";
 
 const user_rules = [
   "DOMAIN-SUFFIX,gofile.io,DIRECT",
-  "DOMAIN-SUFFIX,list-manage.com,手动选择",
-  "DOMAIN-KEYWORD,inference.net,手动选择",
-  "DOMAIN-KEYWORD,byteintl.com,手动选择",
-  "DOMAIN-SUFFIX,byteoversea.com,手动选择",
-  "DOMAIN-SUFFIX,byteintlapi.com,手动选择",
-  "DOMAIN-SUFFIX,yhgfb-static.com,手动选择",
-  "DOMAIN-SUFFIX,unsplash.com,手动选择",
-  // "DOMAIN-SUFFIX,google.com,SG - 手动选择",
-  // "DOMAIN-SUFFIX,googlevideo.com,SG - 手动选择",
-  // "DOMAIN-SUFFIX,google-analytics.com,SG - 手动选择",
-  // "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
-  // "DOMAIN-SUFFIX,googleapis.com,手动选择",
-  // "DOMAIN-SUFFIX,google.com,手动选择",
-  "DOMAIN-KEYWORD,bitwarden,手动选择",
-  "DOMAIN-SUFFIX,vercel.app,手动选择",
-  "DOMAIN-SUFFIX,linux.do,手动选择",
-  "DOMAIN-SUFFIX,ldstatic.com,手动选择",
-  "DOMAIN-SUFFIX,oaifree.com,手动选择",
-  "DOMAIN-SUFFIX,deepl.com,手动选择",
-  "DOMAIN-SUFFIX,itisu.me,手动选择",
-  "DOMAIN-SUFFIX,appinn.com,手动选择",
   "DOMAIN-SUFFIX,ping0.cc,DIRECT",
-  "DOMAIN-SUFFIX,ifconfig.me,手动选择",
-  "DOMAIN-SUFFIX,ipdata.co,手动选择",
-  "DOMAIN-SUFFIX,perplexity.ai,手动选择",
-  "DOMAIN-SUFFIX,docker.com,手动选择",
-  "DOMAIN-SUFFIX,docker.io,手动选择",
-  "DOMAIN-SUFFIX,diskanalyzer.com,手动选择",
-  "DOMAIN-SUFFIX,stripe.com,手动选择",
-  "DOMAIN-SUFFIX,segment.io,手动选择",
-  "DOMAIN-SUFFIX,launchdarkly.com,手动选择",
-  "DOMAIN-SUFFIX,smnet.io,手动选择",
-  "DOMAIN-SUFFIX,cursor.sh,手动选择",
-  "DOMAIN-SUFFIX,spiritlhl.net,手动选择",
-  "DOMAIN-SUFFIX,python.org,手动选择",
-  "DOMAIN-SUFFIX,bolt.new,手动选择",
-  "DOMAIN-SUFFIX,staticblitz.com,手动选择",
-  "DOMAIN-SUFFIX,notion.so,手动选择",
-  "DOMAIN-SUFFIX,follow.is,手动选择",
-  "DOMAIN-SUFFIX,netflixgc.com,手动选择",
-  "DOMAIN-SUFFIX,nodeloc.com,手动选择",
-  "DOMAIN-SUFFIX,openai.com,手动选择",
-  "DOMAIN-SUFFIX,rust-lang.org,手动选择",
-  "DOMAIN-SUFFIX,crates.io,手动选择",
-  "DOMAIN-SUFFIX,huggingface.co,手动选择",
-  "DOMAIN-SUFFIX,spotify.com,手动选择",
-  "DOMAIN-SUFFIX,gstatic.com,手动选择",
-  "DOMAIN-SUFFIX,nodeseek.com,手动选择",
-  "DOMAIN-SUFFIX,gvt2.com,手动选择",
-  "DOMAIN-SUFFIX,windowsupdate.com,手动选择",
-  "DOMAIN-SUFFIX,recaptcha.net,手动选择",
-  "DOMAIN-SUFFIX,sofast.xin,手动选择",
-  "DOMAIN-SUFFIX,neodb.social,手动选择",
-  "DOMAIN-SUFFIX,gvt1.com,手动选择",
-  "DOMAIN-SUFFIX,javdb.com,手动选择",
+  "DOMAIN-SUFFIX,google.com,SG - 手动选择",
+  "DOMAIN-SUFFIX,googlevideo.com,SG - 手动选择",
+  "DOMAIN-SUFFIX,google-analytics.com,SG - 手动选择",
+  "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
+  "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
+  "DOMAIN-SUFFIX,google.com,SG - 手动选择",
 ]
 
 function main(params) {
@@ -122,6 +74,8 @@ function getTestUrlForGroup(groupName) {
 
 function getIconForGroup(groupName) {
   switch (groupName) {
+    case "User Proxy":
+      return "https://fastly.jsdelivr.net/gh/luzov/Clash-Rules@main/assets/icons/at.svg";
     case "Google":
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg";
     case "Telegram":
@@ -146,6 +100,7 @@ function getIconForGroup(groupName) {
 function overwriteRules(params) {
   const rules = [
     ...user_rules,
+    "RULE-SET,user_proxy_rules,User Proxy",
     "RULE-SET,google,Google",
     "RULE-SET,steam,Steam",
     "RULE-SET,private,DIRECT",
@@ -169,10 +124,17 @@ function overwriteRules(params) {
     "MATCH,漏网之鱼",
   ];
   const ruleProviders = {
+    user_proxy_rules: {
+      type: "http",
+      behavior: "classical",
+      url: "https://raw.githubusercontent.com/luzov/Clash-Rules/refs/heads/main/user_proxy_rules.txt",
+      path: "./ruleset/user_proxy_rules.yaml",
+      interval: 86400,
+    },
     steam: {
       type: "http",
       behavior: "classical",
-      url: "https://raw.githubusercontent.com/luzov/Mihomo-Rules/refs/heads/main/Steam.txt",
+      url: "https://raw.githubusercontent.com/luzov/Clash-Rules/refs/heads/main/Steam.txt",
       path: "./ruleset/steam.yaml",
       interval: 86400,
     },
@@ -423,6 +385,7 @@ function overwriteProxyGroups(params) {
     },
 
     ...[
+      "User Proxy",
       "Google",
       "Telegram", 
       // "ChatGPT", 
