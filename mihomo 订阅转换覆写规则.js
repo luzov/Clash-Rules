@@ -1,9 +1,24 @@
 const proxyName = "代理模式";
 
 const user_rules = [
+  "DOMAIN-SUFFIX,gofile.io,DIRECT",
+  "DOMAIN-SUFFIX,list-manage.com,手动选择",
+  "DOMAIN-KEYWORD,inference.net,手动选择",
+  "DOMAIN-KEYWORD,byteintl.com,手动选择",
+  "DOMAIN-SUFFIX,byteoversea.com,手动选择",
+  "DOMAIN-SUFFIX,byteintlapi.com,手动选择",
+  "DOMAIN-SUFFIX,yhgfb-static.com,手动选择",
+  "DOMAIN-SUFFIX,unsplash.com,手动选择",
+  // "DOMAIN-SUFFIX,google.com,SG - 手动选择",
+  // "DOMAIN-SUFFIX,googlevideo.com,SG - 手动选择",
+  // "DOMAIN-SUFFIX,google-analytics.com,SG - 手动选择",
+  // "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
+  // "DOMAIN-SUFFIX,googleapis.com,手动选择",
+  // "DOMAIN-SUFFIX,google.com,手动选择",
   "DOMAIN-KEYWORD,bitwarden,手动选择",
   "DOMAIN-SUFFIX,vercel.app,手动选择",
-  //"DOMAIN-SUFFIX,linux.do,手动选择",
+  "DOMAIN-SUFFIX,linux.do,手动选择",
+  "DOMAIN-SUFFIX,ldstatic.com,手动选择",
   "DOMAIN-SUFFIX,oaifree.com,手动选择",
   "DOMAIN-SUFFIX,deepl.com,手动选择",
   "DOMAIN-SUFFIX,itisu.me,手动选择",
@@ -15,16 +30,11 @@ const user_rules = [
   "DOMAIN-SUFFIX,docker.com,手动选择",
   "DOMAIN-SUFFIX,docker.io,手动选择",
   "DOMAIN-SUFFIX,diskanalyzer.com,手动选择",
-  "DOMAIN-SUFFIX,us.kg,手动选择",
   "DOMAIN-SUFFIX,stripe.com,手动选择",
-  "DOMAIN-SUFFIX,arc.net,手动选择",
-  "DOMAIN-SUFFIX,sentry.io,手动选择",
   "DOMAIN-SUFFIX,segment.io,手动选择",
   "DOMAIN-SUFFIX,launchdarkly.com,手动选择",
   "DOMAIN-SUFFIX,smnet.io,手动选择",
   "DOMAIN-SUFFIX,cursor.sh,手动选择",
-  "DOMAIN-SUFFIX,codeium.com,手动选择",
-  "DOMAIN-SUFFIX,codeiumdata.com,手动选择",
   "DOMAIN-SUFFIX,spiritlhl.net,手动选择",
   "DOMAIN-SUFFIX,python.org,手动选择",
   "DOMAIN-SUFFIX,bolt.new,手动选择",
@@ -37,13 +47,9 @@ const user_rules = [
   "DOMAIN-SUFFIX,rust-lang.org,手动选择",
   "DOMAIN-SUFFIX,crates.io,手动选择",
   "DOMAIN-SUFFIX,huggingface.co,手动选择",
-  "DOMAIN-SUFFIX,lingche.icu,手动选择",
-  "DOMAIN-SUFFIX,subconverters.com,手动选择",
   "DOMAIN-SUFFIX,spotify.com,手动选择",
   "DOMAIN-SUFFIX,gstatic.com,手动选择",
   "DOMAIN-SUFFIX,nodeseek.com,手动选择",
-  "DOMAIN-SUFFIX,googleapis.com,手动选择",
-  "DOMAIN-SUFFIX,google.com,手动选择",
   "DOMAIN-SUFFIX,gvt2.com,手动选择",
   "DOMAIN-SUFFIX,windowsupdate.com,手动选择",
   "DOMAIN-SUFFIX,recaptcha.net,手动选择",
@@ -65,12 +71,12 @@ function main(params) {
 
 const countryRegions = [
   { code: "HK", name: "香港", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg", regex: /(香港|HK|Hong Kong|🇭🇰)(?!.*(中国|CN|China|PRC|🇨🇳))/i },
-  { code: "TW", name: "台湾", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg", regex: /(台湾|\bTW\b|Taiwan|🇹🇼)(?!.*(中国|CN|China|PRC|🇨🇳))(?!.*Networks)/i },
   { code: "SG", name: "新加坡", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/sg.svg", regex: /(新加坡|狮城|SG|Singapore|🇸🇬)/i },
   { code: "JP", name: "日本", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg", regex: /(日本|JP|Japan|🇯🇵)/i },
   { code: "US", name: "美国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg", regex: /^(?!.*(Plus|plus|custom)).*(美国|US|USA|United States|America|🇺🇸)/i },
-  { code: "KR", name: "韩国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/kr.svg", regex: /(韩国|KR|Korea|South Korea|🇰🇷)/i },
   { code: "UK", name: "英国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/gb.svg", regex: /(英国|UK|United Kingdom|Britain|Great Britain|🇬🇧)/i },
+  //{ code: "TW", name: "台湾", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tw.svg", regex: /(台湾|\bTW\b|Taiwan|🇹🇼)(?!.*(中国|CN|China|PRC|🇨🇳))(?!.*Networks)/i },
+  //{ code: "KR", name: "韩国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/kr.svg", regex: /(韩国|KR|Korea|South Korea|🇰🇷)/i },
   //{ code: "DE", name: "德国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/de.svg", regex: /^(?!.*shadowsocks).*(德国|DE|Germany|🇩🇪)/i },
   //{ code: "CA", name: "加拿大", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/ca.svg", regex: /^(?!.*(Anycast|Datacamp)).*(加拿大|CA|Canada|🇨🇦)/i },
   //{ code: "AU", name: "澳大利亚", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/au.svg", regex: /(澳大利亚|AU|Australia|🇦🇺)/i },
@@ -97,14 +103,16 @@ const countryRegions = [
 
 function getTestUrlForGroup(groupName) {
   switch (groupName) {
+    case "Google":
+      return "https://www.google.com/";
     case "Steam":
       return "https://store.steampowered.com/";
     case "Telegram":
       return "https://web.telegram.org/";
-    case "ChatGPT":
-      return "https://chat.openai.com/";
-    case "Claude":
-      return "https://claude.ai/";
+    // case "ChatGPT":
+    //   return "https://chat.openai.com/";
+    // case "Claude":
+    //   return "https://claude.ai/";
     case "Spotify":
       return "https://www.spotify.com/";
     default:
@@ -114,16 +122,18 @@ function getTestUrlForGroup(groupName) {
 
 function getIconForGroup(groupName) {
   switch (groupName) {
-    case "Steam":
-      return "https://store.steampowered.com/favicon.ico";
+    case "Google":
+      return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg";
     case "Telegram":
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg";
-    case "ChatGPT":
-      return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg";
-    case "Claude":
-      return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
+    // case "ChatGPT":
+    //   return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg";
+    // case "Claude":
+    //   return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
     case "Spotify":
       return "https://storage.googleapis.com/spotifynewsroom-jp.appspot.com/1/2020/12/Spotify_Icon_CMYK_Green.png";
+    case "Steam":
+      return "https://store.steampowered.com/favicon.ico";
     case "漏网之鱼":
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/fish.svg";
     case "广告拦截":
@@ -136,6 +146,7 @@ function getIconForGroup(groupName) {
 function overwriteRules(params) {
   const rules = [
     ...user_rules,
+    "RULE-SET,google,Google",
     "RULE-SET,steam,Steam",
     "RULE-SET,private,DIRECT",
     "RULE-SET,lancidr,DIRECT",
@@ -144,13 +155,12 @@ function overwriteRules(params) {
     "GEOIP,CN,DIRECT,no-resolve",
     "RULE-SET,direct,DIRECT",
     "RULE-SET,applications,DIRECT",
-    "RULE-SET,openai,ChatGPT",
-    "RULE-SET,claude,Claude",
+    // "RULE-SET,openai,ChatGPT",
+    // "RULE-SET,claude,Claude",
     "RULE-SET,spotify,Spotify",
     "RULE-SET,telegramcidr,Telegram,no-resolve",
     "RULE-SET,apple," + proxyName,
     "RULE-SET,icloud," + proxyName,
-    "RULE-SET,google," + proxyName,
     "RULE-SET,greatfire," + proxyName,
     "RULE-SET,reject,广告拦截",
     "RULE-SET,gfw," + proxyName,
@@ -413,10 +423,11 @@ function overwriteProxyGroups(params) {
     },
 
     ...[
-      "Steam", 
+      "Google",
       "Telegram", 
-      "ChatGPT", 
-      "Claude", 
+      // "ChatGPT", 
+      // "Claude", 
+      "Steam", 
       "Spotify"
       ].map(groupName => ({
       name: groupName,
@@ -467,7 +478,7 @@ function overwriteProxyGroups(params) {
 }
 
 function overwriteDns(params) {
-  const cnDnsList = ["https://223.5.5.5/dns-query", "https://1.12.12.12/dns-query"];
+  const cnDnsList = ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"];
   const trustDnsList = ["https://dns.google/dns-query","quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
   const dnsOptions = {
     enable: true,
