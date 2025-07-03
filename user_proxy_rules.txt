@@ -37,7 +37,6 @@ payload:
   - DOMAIN-SUFFIX,rust-lang.org
   - DOMAIN-SUFFIX,crates.io
   - DOMAIN-SUFFIX,huggingface.co
-  - DOMAIN-SUFFIX,spotify.com
   - DOMAIN-SUFFIX,gstatic.com
   - DOMAIN-SUFFIX,nodeseek.com
   - DOMAIN-SUFFIX,gvt2.com
