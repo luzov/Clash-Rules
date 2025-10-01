@@ -46,3 +46,4 @@ payload:
   - DOMAIN-SUFFIX,neodb.social
   - DOMAIN-SUFFIX,gvt1.com
   - DOMAIN-SUFFIX,javdb.com
+  - DOMAIN-SUFFIX,artislg.com
