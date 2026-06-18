@@ -47,3 +47,4 @@ payload:
   - DOMAIN-SUFFIX,gvt1.com
   - DOMAIN-SUFFIX,javdb.com
   - DOMAIN-SUFFIX,artislg.com
+  - DOMAIN-SUFFIX,hf.space
