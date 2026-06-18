@@ -3,12 +3,14 @@ const proxyName = "代理模式";
 const user_rules = [
   "DOMAIN-SUFFIX,gofile.io,DIRECT",
   "DOMAIN-SUFFIX,ping0.cc,DIRECT",
+  "DOMAIN-SUFFIX,bing.com,DIRECT",
+  "DOMAIN-SUFFIX,teracloud.jp,DIRECT",
+  "DOMAIN-SUFFIX,microsoft.com,手动选择",
   "DOMAIN-SUFFIX,google.com,SG - 手动选择",
   "DOMAIN-SUFFIX,googlevideo.com,SG - 手动选择",
   "DOMAIN-SUFFIX,google-analytics.com,SG - 手动选择",
   "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
-  "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
-  "DOMAIN-SUFFIX,google.com,SG - 手动选择",
+  "DOMAIN-SUFFIX,google.com,SG - 手动选择"
 ]
 
 function main(params) {
@@ -61,10 +63,10 @@ function getTestUrlForGroup(groupName) {
       return "https://store.steampowered.com/";
     case "Telegram":
       return "https://web.telegram.org/";
-    // case "ChatGPT":
-    //   return "https://chat.openai.com/";
-    // case "Claude":
-    //   return "https://claude.ai/";
+    case "ChatGPT":
+      return "https://chat.openai.com/";
+    case "Claude":
+      return "https://claude.ai/";
     case "Spotify":
       return "https://www.spotify.com/";
     default:
@@ -80,10 +82,10 @@ function getIconForGroup(groupName) {
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg";
     case "Telegram":
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg";
-    // case "ChatGPT":
-    //   return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg";
-    // case "Claude":
-    //   return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
+    case "ChatGPT":
+      return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg";
+    case "Claude":
+      return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
     case "Spotify":
       return "https://storage.googleapis.com/spotifynewsroom-jp.appspot.com/1/2020/12/Spotify_Icon_CMYK_Green.png";
     case "Steam":
@@ -110,8 +112,8 @@ function overwriteRules(params) {
     "GEOIP,CN,DIRECT,no-resolve",
     "RULE-SET,direct,DIRECT",
     "RULE-SET,applications,DIRECT",
-    // "RULE-SET,openai,ChatGPT",
-    // "RULE-SET,claude,Claude",
+    "RULE-SET,openai,ChatGPT",
+    "RULE-SET,claude,Claude",
     "RULE-SET,spotify,Spotify",
     "RULE-SET,telegramcidr,Telegram,no-resolve",
     "RULE-SET,apple," + proxyName,
@@ -176,7 +178,7 @@ function overwriteRules(params) {
     openai: {
       type: "http",
       behavior: "classical",
-      url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml",
+      url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml",
       path: "./ruleset/custom/openai.yaml",
     },
     claude: {
@@ -388,8 +390,8 @@ function overwriteProxyGroups(params) {
       "User Proxy",
       "Google",
       "Telegram", 
-      // "ChatGPT", 
-      // "Claude", 
+      "ChatGPT", 
+      "Claude", 
       "Steam", 
       "Spotify"
       ].map(groupName => ({
