@@ -48,3 +48,4 @@ payload:
   - DOMAIN-SUFFIX,javdb.com
   - DOMAIN-SUFFIX,artislg.com
   - DOMAIN-SUFFIX,hf.space
+  - DOMAIN-SUFFIX,lmarena-ai.com
