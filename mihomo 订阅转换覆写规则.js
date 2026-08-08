@@ -4,13 +4,12 @@ const user_rules = [
   "DOMAIN-SUFFIX,gofile.io,DIRECT",
   "DOMAIN-SUFFIX,ping0.cc,DIRECT",
   "DOMAIN-SUFFIX,bing.com,DIRECT",
-  "DOMAIN-SUFFIX,teracloud.jp,DIRECT",
-  "DOMAIN-SUFFIX,microsoft.com,手动选择",
-  "DOMAIN-SUFFIX,google.com,SG - 手动选择",
-  "DOMAIN-SUFFIX,googlevideo.com,SG - 手动选择",
-  "DOMAIN-SUFFIX,google-analytics.com,SG - 手动选择",
-  "DOMAIN-SUFFIX,googleapis.com,SG - 手动选择",
-  "DOMAIN-SUFFIX,google.com,SG - 手动选择"
+  "DOMAIN-SUFFIX,microsoft.com,DIRECT",
+  "DOMAIN-SUFFIX,google.com,Google",
+  "DOMAIN-SUFFIX,googlevideo.com,Google",
+  "DOMAIN-SUFFIX,google-analytics.com,Google",
+  "DOMAIN-SUFFIX,googleapis.com,Google",
+  "DOMAIN-SUFFIX,google.com,Google",
 ]
 
 function main(params) {
@@ -63,10 +62,10 @@ function getTestUrlForGroup(groupName) {
       return "https://store.steampowered.com/";
     case "Telegram":
       return "https://web.telegram.org/";
-    case "ChatGPT":
+    case "OpenAI":
       return "https://chat.openai.com/";
-    case "Claude":
-      return "https://claude.ai/";
+    // case "Claude":
+    //   return "https://claude.ai/";
     case "Spotify":
       return "https://www.spotify.com/";
     default:
@@ -82,10 +81,10 @@ function getIconForGroup(groupName) {
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg";
     case "Telegram":
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/telegram.svg";
-    case "ChatGPT":
+    case "OpenAI":
       return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg";
-    case "Claude":
-      return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
+    // case "Claude":
+    //   return "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/claude.svg";
     case "Spotify":
       return "https://storage.googleapis.com/spotifynewsroom-jp.appspot.com/1/2020/12/Spotify_Icon_CMYK_Green.png";
     case "Steam":
@@ -112,8 +111,8 @@ function overwriteRules(params) {
     "GEOIP,CN,DIRECT,no-resolve",
     "RULE-SET,direct,DIRECT",
     "RULE-SET,applications,DIRECT",
-    "RULE-SET,openai,ChatGPT",
-    "RULE-SET,claude,Claude",
+    "RULE-SET,openai,OpenAI",
+    // "RULE-SET,claude,Claude",
     "RULE-SET,spotify,Spotify",
     "RULE-SET,telegramcidr,Telegram,no-resolve",
     "RULE-SET,apple," + proxyName,
@@ -178,7 +177,7 @@ function overwriteRules(params) {
     openai: {
       type: "http",
       behavior: "classical",
-      url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml",
+      url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml",
       path: "./ruleset/custom/openai.yaml",
     },
     claude: {
@@ -234,13 +233,6 @@ function overwriteRules(params) {
       path: "./ruleset/tld-not-cn.yaml",
       interval: 86400,
     },
-    telegramcidr: {
-      type: "http",
-      behavior: "ipcidr",
-      url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt",
-      path: "./ruleset/telegramcidr.yaml",
-      interval: 86400,
-    },
     cncidr: {
       type: "http",
       behavior: "ipcidr",
@@ -294,7 +286,7 @@ function overwriteProxyGroups(params) {
     }
   }
 
-  availableCountryCodes.add("CN");
+  // availableCountryCodes.add("CN");
 
   const autoProxyGroupRegexs = countryRegions
     .filter(region => availableCountryCodes.has(region.code))
@@ -390,8 +382,8 @@ function overwriteProxyGroups(params) {
       "User Proxy",
       "Google",
       "Telegram", 
-      "ChatGPT", 
-      "Claude", 
+      "OpenAI", 
+      // "Claude", 
       "Steam", 
       "Spotify"
       ].map(groupName => ({
@@ -445,19 +437,19 @@ function overwriteProxyGroups(params) {
 function overwriteDns(params) {
   const cnDnsList = ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"];
   const trustDnsList = ["https://dns.google/dns-query","quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
-  const dnsOptions = {
-    enable: true,
-    "prefer-h3": true,
-    "default-nameserver": cnDnsList,
-    nameserver: trustDnsList,
-    "nameserver-policy": {
-      "geosite:cn": cnDnsList,
-      "geosite:geolocation-!cn": trustDnsList,
-      "domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
-    },
-    fallback: trustDnsList,
-    "fallback-filter": { geoip: true, "geoip-code": "CN", ipcidr: ["240.0.0.0/4"] },
-  };
+ const dnsOptions = {
+  enable: true,
+  "prefer-h3": true,
+  "default-nameserver": cnDnsList,                      // 启动用国内 DNS
+  nameserver: cnDnsList,                               // ✅ 改为国内 DNS
+  "nameserver-policy": {
+    "geosite:cn": cnDnsList,                           // 国内域名强制走国内
+    "geosite:geolocation-!cn": trustDnsList,           // 国外域名强制走国外
+    "domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
+  },
+  fallback: trustDnsList,                              // 国外 DNS 作为后备
+  "fallback-filter": { geoip: true, "geoip-code": "CN", ipcidr: ["240.0.0.0/4"] },
+};
   const githubPrefix = "https://fastgh.lainbo.com/";
   const rawGeoxURLs = {
     geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat",
