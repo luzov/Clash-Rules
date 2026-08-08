@@ -49,3 +49,5 @@ payload:
   - DOMAIN-SUFFIX,artislg.com
   - DOMAIN-SUFFIX,hf.space
   - DOMAIN-SUFFIX,lmarena-ai.com
+  - DOMAIN-SUFFIX,p30download.ir
+  - DOMAIN-KEYWORD,ikuuu
