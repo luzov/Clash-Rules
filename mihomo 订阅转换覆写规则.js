@@ -381,12 +381,12 @@ function overwriteProxyGroups(params) {
     ...[
       "User Proxy",
       "Google",
-      "Telegram", 
-      "OpenAI", 
+      "Telegram",
+      "OpenAI",
       // "Claude", 
-      "Steam", 
+      "Steam",
       "Spotify"
-      ].map(groupName => ({
+    ].map(groupName => ({
       name: groupName,
       type: "select",
       url: getTestUrlForGroup(groupName),
@@ -436,20 +436,20 @@ function overwriteProxyGroups(params) {
 
 function overwriteDns(params) {
   const cnDnsList = ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"];
-  const trustDnsList = ["https://dns.google/dns-query","quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
- const dnsOptions = {
-  enable: true,
-  "prefer-h3": true,
-  "default-nameserver": cnDnsList,                      // 启动用国内 DNS
-  nameserver: cnDnsList,                               // ✅ 改为国内 DNS
-  "nameserver-policy": {
-    "geosite:cn": cnDnsList,                           // 国内域名强制走国内
-    "geosite:geolocation-!cn": trustDnsList,           // 国外域名强制走国外
-    "domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
-  },
-  fallback: trustDnsList,                              // 国外 DNS 作为后备
-  "fallback-filter": { geoip: true, "geoip-code": "CN", ipcidr: ["240.0.0.0/4"] },
-};
+  const trustDnsList = ["https://dns.google/dns-query", "quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
+  const dnsOptions = {
+    enable: true,
+    "prefer-h3": true,
+    "default-nameserver": cnDnsList,                      // 启动用国内 DNS
+    nameserver: cnDnsList,                               // ✅ 改为国内 DNS
+    "nameserver-policy": {
+      "geosite:cn": cnDnsList,                           // 国内域名强制走国内
+      "geosite:geolocation-!cn": trustDnsList,           // 国外域名强制走国外
+      "domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
+    },
+    fallback: trustDnsList,                              // 国外 DNS 作为后备
+    "fallback-filter": { geoip: true, "geoip-code": "CN", ipcidr: ["240.0.0.0/4"] },
+  };
   const githubPrefix = "https://fastgh.lainbo.com/";
   const rawGeoxURLs = {
     geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat",
