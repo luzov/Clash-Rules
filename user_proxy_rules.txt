@@ -51,3 +51,4 @@ payload:
   - DOMAIN-SUFFIX,lmarena-ai.com
   - DOMAIN-SUFFIX,p30download.ir
   - DOMAIN-KEYWORD,ikuuu
+  - DOMAIN-SUFFIX,surrit.com
