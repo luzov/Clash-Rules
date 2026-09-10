@@ -4,12 +4,19 @@ const user_rules = [
   "DOMAIN-SUFFIX,gofile.io,DIRECT",
   "DOMAIN-SUFFIX,ping0.cc,DIRECT",
   "DOMAIN-SUFFIX,bing.com,DIRECT",
-  "DOMAIN-SUFFIX,microsoft.com,DIRECT",
   "DOMAIN-SUFFIX,google.com,Google",
   "DOMAIN-SUFFIX,googlevideo.com,Google",
   "DOMAIN-SUFFIX,google-analytics.com,Google",
   "DOMAIN-SUFFIX,googleapis.com,Google",
   "DOMAIN-SUFFIX,google.com,Google",
+  "DOMAIN-SUFFIX,opencode.ai,OpenAI",
+  "DOMAIN-SUFFIX,meta.ai,OpenAI",
+  "DOMAIN-SUFFIX,facebook.com,OpenAI",
+  "DOMAIN-SUFFIX,fbcdn.net,OpenAI",
+  "DOMAIN-SUFFIX,facebook.net,OpenAI",
+  "DOMAIN-SUFFIX,commandcode.ai,OpenAI",
+  "DOMAIN-SUFFIX,teamorouter.com,OpenAI",
+  "DOMAIN-SUFFIX,aihubmix.com,OpenAI",
 ]
 
 function main(params) {
