@@ -1,3 +1,10 @@
+// 这个脚本两台机器共用（WebDAV 备份会打包 override/ 目录），按机器改这两行：
+//   KEEP_JP_NODES  true = 日本节点与港新同等处理；false = 整段剔除（公司网络上日本节点入口被拦）
+//   COMPANY_EGRESS 沙箱里取不到设备名/内网 IP（只有 fetch/yaml/console/Buffer），只能按公网出口 IP 判别；
+//                  "off" 不探测、"log" 只写日志（override/<id>.log）、正则命中即视为公司电脑
+const KEEP_JP_NODES = true;
+const COMPANY_EGRESS = /36\.33\.26\.136/; // 公司出口；家里是 36.161.232.5，探测失败按公司处理
+
 const proxyName = "代理模式";
 
 const user_rules = [
@@ -7,7 +14,6 @@ const user_rules = [
   "DOMAIN-SUFFIX,googlevideo.com,Google",
   "DOMAIN-SUFFIX,google-analytics.com,Google",
   "DOMAIN-SUFFIX,googleapis.com,Google",
-  "DOMAIN-SUFFIX,google.com,Google",
   "DOMAIN-SUFFIX,opencode.ai,OpenAI",
   "DOMAIN-SUFFIX,meta.ai,OpenAI",
   "DOMAIN-SUFFIX,facebook.com,OpenAI",
@@ -19,10 +25,31 @@ const user_rules = [
   "DOMAIN-SUFFIX,tokenharbor.ai,OpenAI",
 ]
 
-function main(params) {
+// COMPANY_EGRESS 不为 "off" 时才发请求；失败按公司处理（宁可在公司少用日本节点）
+async function shouldKeepJpNodes() {
+  if (COMPANY_EGRESS === "off") return KEEP_JP_NODES;
+  let txt;
+  try {
+    const res = await fetch("https://ipinfo.io/json", { signal: AbortSignal.timeout(2500) });
+    txt = (await res.text()).replace(/\s+/g, " ");
+  } catch (e) {
+    console.log("[egress] probe failed: " + e + " → 按公司处理");
+    return false;
+  }
+  console.log("[egress] " + txt);
+  if (COMPANY_EGRESS === "log") return KEEP_JP_NODES;
+  return !COMPANY_EGRESS.test(txt);
+}
+
+async function main(params) {
   if (!params.proxies) return params;
-  // 删除所有名称中包含“日本”的节点
-  params.proxies = params.proxies.filter(proxy => !proxy.name.includes("日本"));
+  // KEEP_JP_NODES=false 时整段剔除日本节点（公司网络拦其入口）。
+  // 其余 28 个节点入口同为 36.141.40.13（移动广东，同 IP 不同端口，单连接 ~1MB/s 的整形在那里）；
+  // 日本Z05/Z06、免费-日本1~7 走 AWS 东京，不经该入口，所以家里下单流更快（别外推到公司线路）。
+  const allowJp = await shouldKeepJpNodes();
+  if (jpRegion && !allowJp) {
+    params.proxies = params.proxies.filter((proxy) => !jpRegion.regex.test(proxy.name));
+  }
   overwriteRules(params);
   overwriteProxyGroups(params);
   overwriteDns(params);
@@ -30,7 +57,7 @@ function main(params) {
 }
 
 const countryRegions = [
-  { code: "HK", name: "香港", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg", regex: /(香港|HK|Hong Kong|🇭🇰)(?!.*(中国|CN|China|PRC|🇨🇳))/i },
+  { code: "HK", name: "香港", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/hk.svg", regex: /(香港|HK|Hong Kong|🇭🇰)(?!.*(中国|China|PRC))/i },
   { code: "SG", name: "新加坡", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/sg.svg", regex: /(新加坡|狮城|SG|Singapore|🇸🇬)/i },
   { code: "JP", name: "日本", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/jp.svg", regex: /(日本|JP|Japan|🇯🇵)/i },
   { code: "US", name: "美国", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/us.svg", regex: /^(?!.*(Plus|plus|custom)).*(美国|US|USA|United States|America|🇺🇸)/i },
@@ -60,6 +87,9 @@ const countryRegions = [
   //{ code: "TR", name: "土耳其", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/tr.svg", regex: /^(?!.*(trojan|str|central)).*(土耳其|TR|Turkey|🇹🇷)/i },
   //{ code: "ES", name: "西班牙", icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/es.svg", regex: /^(?!.*(vless|angeles|vmess|seychelles|business|ies|reston)).*(西班牙|ES|Spain|🇪🇸)/i },
 ];
+
+// 分组与剔除共用这一份正则
+const jpRegion = countryRegions.find((r) => r.code === "JP");
 
 function getTestUrlForGroup(groupName) {
   switch (groupName) {
@@ -108,27 +138,30 @@ function getIconForGroup(groupName) {
 function overwriteRules(params) {
   const rules = [
     ...user_rules,
+    // 你仓库里的 user_proxy_rules.txt 排在 reject 之前 —— 要放行的手工加在那份文件里（例：gvt2.com），
+    // 这里不再维护单独的“打洞”列表。代价是那份文件里的域名也会放行其下的广告子域。
     "RULE-SET,user_proxy_rules,User Proxy",
+    "RULE-SET,reject,广告拦截",
     "RULE-SET,google,Google",
     "RULE-SET,steam,Steam",
     "RULE-SET,private,DIRECT",
-    "RULE-SET,lancidr,DIRECT",
-    "GEOIP,LAN,DIRECT,no-resolve",
-    "RULE-SET,cncidr,DIRECT",
-    "GEOIP,CN,DIRECT,no-resolve",
     "RULE-SET,direct,DIRECT",
     "RULE-SET,applications,DIRECT",
     "RULE-SET,openai,OpenAI",
-    // "RULE-SET,claude,Claude",
+    // Claude 规则集与分组都已下线（provider 一并删除），要恢复需同时加回 provider + 规则 + 分组。
     "RULE-SET,spotify,Spotify",
     "RULE-SET,telegramcidr,Telegram,no-resolve",
     "RULE-SET,apple," + proxyName,
     "RULE-SET,icloud," + proxyName,
     "RULE-SET,greatfire," + proxyName,
-    "RULE-SET,reject,广告拦截",
     "RULE-SET,gfw," + proxyName,
     "RULE-SET,proxy," + proxyName,
     "RULE-SET,tld-not-cn," + proxyName,
+    // IP 类规则放最后：cncidr/lancidr 无 no-resolve，会触发真实解析；GEOIP,CN 带 no-resolve 在 fake-ip 下只剩字面 IP 命中
+    "RULE-SET,lancidr,DIRECT",
+    "GEOIP,LAN,DIRECT,no-resolve",
+    "RULE-SET,cncidr,DIRECT",
+    "GEOIP,CN,DIRECT,no-resolve",
     "MATCH,漏网之鱼",
   ];
   const ruleProviders = {
@@ -186,24 +219,22 @@ function overwriteRules(params) {
       behavior: "classical",
       url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.yaml",
       path: "./ruleset/custom/openai.yaml",
+      interval: 86400,
     },
-    claude: {
-      type: "http",
-      behavior: "classical",
-      url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml",
-      path: "./ruleset/custom/Claude.yaml",
-    },
+    // claude provider 已删：无任何 RULE-SET 引用却每天下载一次；要启用需连带规则/分组一起加回
     spotify: {
       type: "http",
       behavior: "classical",
-      url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Spotify/Spotify.yaml",
+      url: "https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Spotify/Spotify.yaml",
       path: "./ruleset/custom/Spotify.yaml",
+      interval: 86400,
     },
     telegramcidr: {
       type: "http",
       behavior: "ipcidr",
       url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt",
       path: "./ruleset/custom/telegramcidr.yaml",
+      interval: 86400,
     },
     direct: {
       type: "http",
@@ -293,8 +324,6 @@ function overwriteProxyGroups(params) {
     }
   }
 
-  // availableCountryCodes.add("CN");
-
   const autoProxyGroupRegexs = countryRegions
     .filter(region => availableCountryCodes.has(region.code))
     .map(region => ({
@@ -307,8 +336,10 @@ function overwriteProxyGroups(params) {
       name: item.name,
       type: "url-test",
       url: "http://www.gstatic.com/generate_204",
-      interval: 300,
+      // 节点同属一个入海口，延时差小、抖动大，拉长探测间隔 + 只在选中时探测
+      interval: 600,
       tolerance: 50,
+      lazy: true,
       proxies: getProxiesByRegex(params, item.regex),
       hidden: true,
     }))
@@ -319,7 +350,7 @@ function overwriteProxyGroups(params) {
     .map(region => ({
       name: `${region.code} - 手动选择`,
       type: "select",
-      proxies: getManualProxiesByRegex(params, region.regex),
+      proxies: getManualProxiesByRegex(params, region),
       icon: region.icon,
       hidden: false,
     })).filter(item => item.proxies.length > 0);
@@ -344,9 +375,7 @@ function overwriteProxyGroups(params) {
       name: "自动选择",
       type: "select",
       icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg",
-      proxies: ["ALL - 自动选择", ...autoProxyGroups
-        .filter(group => !["Shared Chat", "Steam", "Telegram", "ChatGPT", "Claude", "Spotify", "Linux Do"].includes(group.name))
-        .map(group => group.name)],
+      proxies: ["ALL - 自动选择", ...autoProxyGroups.map(group => group.name)],
     },
 
     {
@@ -354,11 +383,12 @@ function overwriteProxyGroups(params) {
       type: "load-balance",
       url: "http://www.gstatic.com/generate_204",
       icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/balance.svg",
-      interval: 300,
+      interval: 600,
       "max-failed-times": 3,
       strategy: "consistent-hashing",
       lazy: true,
-      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+      // 只散列 港/新/日：其余国家延时 500ms+，会把会话钉死在慢节点上
+      proxies: getProxiesByRegex(params, /香港|HK|新加坡|SG|日本/i),
       hidden: true,
     },
 
@@ -367,11 +397,11 @@ function overwriteProxyGroups(params) {
       type: "load-balance",
       url: "http://www.gstatic.com/generate_204",
       icon: "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/merry_go.svg",
-      interval: 300,
+      interval: 600,
       "max-failed-times": 3,
       strategy: "round-robin",
       lazy: true,
-      proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
+      proxies: getProxiesByRegex(params, /香港|HK|新加坡|SG|下载专用/i),
       hidden: true,
     },
 
@@ -379,7 +409,7 @@ function overwriteProxyGroups(params) {
       name: "ALL - 自动选择",
       type: "url-test",
       url: "http://www.gstatic.com/generate_204",
-      interval: 300,
+      interval: 600,
       tolerance: 50,
       proxies: allProxies.length > 0 ? allProxies : ["DIRECT"],
       hidden: true,
@@ -430,8 +460,9 @@ function overwriteProxyGroups(params) {
     name: "其它 - 自动选择",
     type: "url-test",
     url: "http://www.gstatic.com/generate_204",
-    interval: 300,
+    interval: 600,
     tolerance: 50,
+    lazy: true,
     proxies: otherProxies.length > 0 ? otherProxies : ["手动选择"],
     hidden: true,
   });
@@ -450,43 +481,16 @@ function overwriteDns(params) {
     nameserver: cnDnsList,
     "proxy-server-nameserver": cnDnsList,                 // 解析代理节点域名（*.qpon）
     "direct-nameserver": cnDnsList,                       // DIRECT 出口专用解析：直连域名不再受代理 DNS 影响
+    // nameserver-policy 优先于 nameserver/fallback；直连只到得了国内 DoH，所以两类都钉国内 DoH
+    // （改前 bing.com / *.tailscale.com 被上游不可达打到解析失败）。本客户端无 fallback/fallback-filter
+    // 字段，写进覆写也会被生成流程剔掉；要让国外 DNS 走梯子得改 TUN + respect-rules。
     "nameserver-policy": {
-      // ⚠️ nameserver-policy 优先于 nameserver / fallback 查询。
-      // 直连唯一能到达的是国内 DoH（dns.google / 1.0.0.1 / 1.1.1.1 / quic://dns.cooluc.com 实测全部超时），
-      // 所以这里统统钉到国内 DoH：改动前 bing.com / *.tailscale.com 就是被这两条策略打到不可达上游才解析失败的。
       "geosite:cn": cnDnsList,
       "geosite:geolocation-!cn": cnDnsList,
-      // 原 `domain:google.com,facebook.com,...` 那条已删除：这些域名本来就属于 geolocation-!cn，
-      // 且两者现在指向同一组国内 DoH，留着纯冗余；顺带避开客户端校验（它不认 `domain:` 前缀写法）。
     },
-    // 关于「让国外 DNS 查询走梯子」：本客户端用不了 fallback/fallback-filter——
-    // Sparkle 的 DNS 表单 schema 里没有这两个字段，生成 work/config.yaml 时会把它们剔掉（实测 fallback 写进
-    // mihomo.yaml 也不出现在运行时配置里）。真要这个能力，只有两条路：
-    //   ① 把 "https://dns.google/dns-query#代理模式" 追加到上面 nameserver-policy 的数组里
-    //      （策略数组是并发查询取最先返回，国内 DoH 通常先返回；代价是每个未缓存域名多开一次代理连接）；
-    //   ② 开 TUN 并配 respect-rules: true，让 DNS 查询按路由规则走（注意与 prefer-h3 不兼容）。
-    // 当前拓扑下国外域名的本地解析结果只用于 IP 类规则判定，走代理的连接由节点远端解析，
-    // 所以保持第一层「全部国内 DoH」最稳，不额外引入对代理可用性的依赖。
   };
-  const githubPrefix = "https://fastgh.lainbo.com/";
-  const rawGeoxURLs = {
-    geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat",
-    geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat",
-    mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb",
-  };
-  const accelURLs = Object.fromEntries(Object.entries(rawGeoxURLs).map(([key, githubUrl]) => [key, `${githubPrefix}${githubUrl}`]));
-  const otherOptions = {
-    "unified-delay": false,
-    "tcp-concurrent": true,
-    profile: { "store-selected": true, "store-fake-ip": true },
-    sniffer: { enable: true, sniff: { TLS: { ports: [443, 8443] }, HTTP: { ports: [80, "8080-8880"], "override-destination": true } } },
-    "geodata-mode": true,
-    "geox-url": accelURLs,
-  };
+  // sniffer/geox-url/geodata-mode/profile 等写在这里不生效（客户端表单会覆盖），要改去客户端「内核」设置
   params.dns = { ...params.dns, ...dnsOptions };
-  Object.keys(otherOptions).forEach((key) => {
-    params[key] = otherOptions[key];
-  });
 }
 
 function getProxiesByRegex(params, regex) {
@@ -494,11 +498,8 @@ function getProxiesByRegex(params, regex) {
   return matchedProxies.length > 0 ? matchedProxies : ["手动选择"];
 }
 
-function getManualProxiesByRegex(params, regex) {
-  const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
-  return regex.test("CN")
-    ? ["DIRECT", ...matchedProxies, "手动选择", proxyName]
-    : matchedProxies.length > 0
-      ? matchedProxies
-      : ["DIRECT", "手动选择", proxyName];
+function getManualProxiesByRegex(params, region) {
+  const matchedProxies = params.proxies.filter((e) => region.regex.test(e.name)).map((e) => e.name);
+  if (region.code === "CN") return ["DIRECT", ...matchedProxies, "手动选择", proxyName];
+  return matchedProxies.length > 0 ? matchedProxies : ["DIRECT", "手动选择", proxyName];
 }
