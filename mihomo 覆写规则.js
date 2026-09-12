@@ -3,8 +3,6 @@ const proxyName = "代理模式";
 const user_rules = [
   "DOMAIN-SUFFIX,gofile.io,DIRECT",
   "DOMAIN-SUFFIX,ping0.cc,DIRECT",
-  "DOMAIN-SUFFIX,bing.com,DIRECT",
-  "DOMAIN-SUFFIX,tailscale.com,DIRECT",
   "DOMAIN-SUFFIX,google.com,Google",
   "DOMAIN-SUFFIX,googlevideo.com,Google",
   "DOMAIN-SUFFIX,google-analytics.com,Google",
