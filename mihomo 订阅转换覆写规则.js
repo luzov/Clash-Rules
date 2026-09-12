@@ -4,6 +4,7 @@ const user_rules = [
   "DOMAIN-SUFFIX,gofile.io,DIRECT",
   "DOMAIN-SUFFIX,ping0.cc,DIRECT",
   "DOMAIN-SUFFIX,bing.com,DIRECT",
+  "DOMAIN-SUFFIX,tailscale.com,DIRECT",
   "DOMAIN-SUFFIX,google.com,Google",
   "DOMAIN-SUFFIX,googlevideo.com,Google",
   "DOMAIN-SUFFIX,google-analytics.com,Google",
@@ -17,6 +18,7 @@ const user_rules = [
   "DOMAIN-SUFFIX,commandcode.ai,OpenAI",
   "DOMAIN-SUFFIX,teamorouter.com,OpenAI",
   "DOMAIN-SUFFIX,aihubmix.com,OpenAI",
+  "DOMAIN-SUFFIX,tokenharbor.ai,OpenAI",
 ]
 
 function main(params) {
@@ -443,19 +445,30 @@ function overwriteProxyGroups(params) {
 
 function overwriteDns(params) {
   const cnDnsList = ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"];
-  const trustDnsList = ["https://dns.google/dns-query", "quic://dns.cooluc.com", "https://1.0.0.1/dns-query", "https://1.1.1.1/dns-query"];
   const dnsOptions = {
     enable: true,
-    "prefer-h3": true,
-    "default-nameserver": cnDnsList,                      // 启动用国内 DNS
-    nameserver: cnDnsList,                               // ✅ 改为国内 DNS
+    "prefer-h3": false,                                  // H3 走隧道更易卡，且与 respect-rules 不兼容
+    "default-nameserver": ["tls://223.5.5.5"],            // 仅用于解析上面这些 DoH 的域名，必须是 IP
+    nameserver: cnDnsList,
+    "proxy-server-nameserver": cnDnsList,                 // 解析代理节点域名（*.qpon）
+    "direct-nameserver": cnDnsList,                       // DIRECT 出口专用解析：直连域名不再受代理 DNS 影响
     "nameserver-policy": {
-      "geosite:cn": cnDnsList,                           // 国内域名强制走国内
-      "geosite:geolocation-!cn": trustDnsList,           // 国外域名强制走国外
-      "domain:google.com,facebook.com,youtube.com,twitter.com,github.com,cloudflare.com,jsdelivr.net,hf.space": trustDnsList,
+      // ⚠️ nameserver-policy 优先于 nameserver / fallback 查询。
+      // 直连唯一能到达的是国内 DoH（dns.google / 1.0.0.1 / 1.1.1.1 / quic://dns.cooluc.com 实测全部超时），
+      // 所以这里统统钉到国内 DoH：改动前 bing.com / *.tailscale.com 就是被这两条策略打到不可达上游才解析失败的。
+      "geosite:cn": cnDnsList,
+      "geosite:geolocation-!cn": cnDnsList,
+      // 原 `domain:google.com,facebook.com,...` 那条已删除：这些域名本来就属于 geolocation-!cn，
+      // 且两者现在指向同一组国内 DoH，留着纯冗余；顺带避开客户端校验（它不认 `domain:` 前缀写法）。
     },
-    fallback: trustDnsList,                              // 国外 DNS 作为后备
-    "fallback-filter": { geoip: true, "geoip-code": "CN", ipcidr: ["240.0.0.0/4"] },
+    // 关于「让国外 DNS 查询走梯子」：本客户端用不了 fallback/fallback-filter——
+    // Sparkle 的 DNS 表单 schema 里没有这两个字段，生成 work/config.yaml 时会把它们剔掉（实测 fallback 写进
+    // mihomo.yaml 也不出现在运行时配置里）。真要这个能力，只有两条路：
+    //   ① 把 "https://dns.google/dns-query#代理模式" 追加到上面 nameserver-policy 的数组里
+    //      （策略数组是并发查询取最先返回，国内 DoH 通常先返回；代价是每个未缓存域名多开一次代理连接）；
+    //   ② 开 TUN 并配 respect-rules: true，让 DNS 查询按路由规则走（注意与 prefer-h3 不兼容）。
+    // 当前拓扑下国外域名的本地解析结果只用于 IP 类规则判定，走代理的连接由节点远端解析，
+    // 所以保持第一层「全部国内 DoH」最稳，不额外引入对代理可用性的依赖。
   };
   const githubPrefix = "https://fastgh.lainbo.com/";
   const rawGeoxURLs = {
