@@ -3,7 +3,7 @@
 //   COMPANY_EGRESS 沙箱里取不到设备名/内网 IP（只有 fetch/yaml/console/Buffer），只能按公网出口 IP 判别；
 //                  "off" 不探测、"log" 只写日志（override/<id>.log）、正则命中即视为公司电脑
 const KEEP_JP_NODES = true;
-const COMPANY_EGRESS = /36\.33\.26\.136/; // 公司出口；家里是 36.161.232.5，探测失败按公司处理
+const COMPANY_EGRESS = /36\.33\.26\.136/; // 公司出口；家里 36.161.232.5；探测失败则不动节点
 
 const proxyName = "代理模式";
 
@@ -25,18 +25,23 @@ const user_rules = [
   "DOMAIN-SUFFIX,tokenharbor.ai,OpenAI",
 ]
 
-// COMPANY_EGRESS 不为 "off" 时才发请求；失败按公司处理（宁可在公司少用日本节点）
+// 沙箱里没有 AbortSignal/setTimeout（只注入了 console/fetch/yaml/b64d/b64e/Buffer），超时只能靠 fetch 自己的；
+// 两个探测源都失败时不动节点（保持 KEEP_JP_NODES），避免家里误判成公司机把日本节点删掉。
+async function probeEgress() {
+  for (const url of ["https://ipinfo.io/json", "https://www.cloudflare.com/cdn-cgi/trace"]) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return (await res.text()).replace(/\s+/g, " ");
+    } catch (e) {}
+  }
+  return null;
+}
+
 async function shouldKeepJpNodes() {
   if (COMPANY_EGRESS === "off") return KEEP_JP_NODES;
-  let txt;
-  try {
-    const res = await fetch("https://ipinfo.io/json", { signal: AbortSignal.timeout(2500) });
-    txt = (await res.text()).replace(/\s+/g, " ");
-  } catch (e) {
-    console.log("[egress] probe failed: " + e + " → 按公司处理");
-    return false;
-  }
-  console.log("[egress] " + txt);
+  const txt = await probeEgress();
+  console.log("[egress] " + (txt ? txt.slice(0, 160) : "探测均失败 → 保持不动"));
+  if (!txt) return KEEP_JP_NODES;
   if (COMPANY_EGRESS === "log") return KEEP_JP_NODES;
   return !COMPANY_EGRESS.test(txt);
 }
