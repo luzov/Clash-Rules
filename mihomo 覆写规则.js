@@ -177,7 +177,7 @@ function overwriteRules(params) {
     user_reject_rules: {
       type: "http",
       behavior: "classical",
-      url: "https://raw.githubusercontent.com/luzov/Clash-Rules/refs/heads/main/user_reject_rules.txt",
+      url: "https://raw.githubusercontent.com/luzov/Clash-Rules/main/user_reject_rules.txt",
       path: "./ruleset/user_reject_rules.yaml",
       interval: 86400,
     },
