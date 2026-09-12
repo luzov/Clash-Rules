@@ -138,8 +138,9 @@ function getIconForGroup(groupName) {
 function overwriteRules(params) {
   const rules = [
     ...user_rules,
-    // 你仓库里的 user_proxy_rules.txt 排在 reject 之前 —— 要放行的手工加在那份文件里（例：gvt2.com），
-    // 这里不再维护单独的“打洞”列表。代价是那份文件里的域名也会放行其下的广告子域。
+    // 冲突子域（拒识列表）先拦，再走你那份宽泛的 user_proxy_rules；
+    // 要在 user_proxy_rules 下放行某个子域，把对应行从仓库 user_reject_rules.txt 删掉即可。
+    "RULE-SET,user_reject_rules,广告拦截",
     "RULE-SET,user_proxy_rules,User Proxy",
     "RULE-SET,reject,广告拦截",
     "RULE-SET,google,Google",
@@ -170,6 +171,14 @@ function overwriteRules(params) {
       behavior: "classical",
       url: "https://raw.githubusercontent.com/luzov/Clash-Rules/refs/heads/main/user_proxy_rules.txt",
       path: "./ruleset/user_proxy_rules.yaml",
+      interval: 86400,
+    },
+    // 拒识列表：user_proxy_rules 与 reject 冲突的子域（仓库 user_reject_rules.txt），排在 user_proxy_rules 之前
+    user_reject_rules: {
+      type: "http",
+      behavior: "classical",
+      url: "https://raw.githubusercontent.com/luzov/Clash-Rules/refs/heads/main/user_reject_rules.txt",
+      path: "./ruleset/user_reject_rules.yaml",
       interval: 86400,
     },
     steam: {
