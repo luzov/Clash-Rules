@@ -52,4 +52,5 @@ payload:
   - DOMAIN-SUFFIX,p30download.ir
   - DOMAIN-KEYWORD,ikuuu
   - DOMAIN-SUFFIX,surrit.com
-  - DOMAIN-SUFFIX,futtsu.teracloud.jp
+  - DOMAIN-SUFFIX,teracloud.jp
+  - DOMAIN-SUFFIX,xgplay11.com
