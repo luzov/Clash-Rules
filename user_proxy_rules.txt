@@ -54,3 +54,4 @@ payload:
   - DOMAIN-SUFFIX,surrit.com
   - DOMAIN-SUFFIX,teracloud.jp
   - DOMAIN-SUFFIX,xgplay11.com
+  - DOMAIN-SUFFIX,whos.tv
